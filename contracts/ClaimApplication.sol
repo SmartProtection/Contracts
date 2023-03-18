@@ -71,7 +71,6 @@ contract ClaimApplication {
      * @dev The policy should not have expired
      * @dev The policyholder should pay the deductible for applying
      * @param _ClaimAmount The amount the policy holder is claiming
-     * @return None
      */
     function submitClaim(uint256 _ClaimAmount) external payable {
         Policy policyContract = Policy(
@@ -127,7 +126,6 @@ contract ClaimApplication {
      * @dev The claim must exist
      * @dev The claim shouldn't be verified
      * @param _policyHolder The policy holder who submitted the claim
-     * @return None
      */
     function verifyClaim(
         address _policyHolder
@@ -148,7 +146,6 @@ contract ClaimApplication {
      * @dev Only insurers can reject claims
      * @dev The claim must exist
      * @param _policyHolder The policy holder who submitted the claim
-     * @return None
      */
     function rejectClaim(
         address _policyHolder
@@ -168,7 +165,6 @@ contract ClaimApplication {
      * @dev Only insurers can pay out claims
      * @dev The claim must exist, be verified, and not already be paid out
      * @param _policyHolder The policy holder who submitted the claim
-     * @return None
      */
     function payClaim(address _policyHolder) external onlyInsurer {
         Policy policyContract = Policy(
@@ -201,7 +197,7 @@ contract ClaimApplication {
      * @notice Get details of a claim
      * @dev The claim must exist.
      * @param _policyHolder The policy holder who submitted the claim
-     * @return The details of the claim
+     * @return Claim structure - the details of the claim
      */
     function getClaim(
         address _policyHolder
