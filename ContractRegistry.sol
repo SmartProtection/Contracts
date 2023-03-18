@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.8.18;
+
+import "./Globals.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ContractRegistry is Ownable {
     mapping(string => address) private contractAddresses;
     string[] private contractNames;
 
-    function addContract(string memory name, address contractAddress) external onlyOwner {
+    function addPolicyContract(address _policyContractAddress) external onlyOwner {
+        addContract(REGISTRY_KEY_POLICY, _policyContractAddress);
+    }
+    
+    function addClaimApplicationContract(address _claimApplicationContractAddress) external onlyOwner {
+        addContract(REGISTRY_KEY_CLAIM_APPLICATION, _claimApplicationContractAddress);
+    }
+
+    function addContract(string memory name, address contractAddress) public onlyOwner {
+        if(contractAddresses[name] == address(0)) {
+            contractNames.push(name);
+        }
         contractAddresses[name] = contractAddress;
-        contractNames.push(name);
     }
 
     function getContract(string memory name) external view returns (address) {
