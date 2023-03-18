@@ -12,13 +12,13 @@ contract ContractRegistry is Ownable {
     function addPolicyContract(address _policyContractAddress) external onlyOwner {
         addContract(REGISTRY_KEY_POLICY, _policyContractAddress);
     }
-    
+
     function addClaimApplicationContract(address _claimApplicationContractAddress) external onlyOwner {
         addContract(REGISTRY_KEY_CLAIM_APPLICATION, _claimApplicationContractAddress);
     }
 
     function addContract(string memory name, address contractAddress) public onlyOwner {
-        if(contractAddresses[name] == address(0)) {
+        if (contractAddresses[name] == address(0)) {
             contractNames.push(name);
         }
         contractAddresses[name] = contractAddress;

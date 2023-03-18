@@ -1,6 +1,18 @@
 {
+  "scripts": {
+    "prettier": "prettier --write contracts/**/*.sol",
+    "compile": "npx hardhat compile",
+    "deploy:sepolia": "npm run compile && npx hardhat run scripts/deploy.js --network sepolia"
+  },
   "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@openzeppelin/contracts": "^4.8.2",
-    "hardhat": "^2.13.0"
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
+    "hardhat": "^2.13.0",
+    "prettier": "^2.8.4"
+  },
+  "devDependencies": {
+    "prettier-plugin-solidity": "^1.1.3"
   }
 }
