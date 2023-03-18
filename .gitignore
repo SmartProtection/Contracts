@@ -1,1 +1,7 @@
+# Ignore:
+artifacts/*
+cache/
 node_modules/
+
+# Except:
+!artifacts/contracts/
