@@ -5,6 +5,10 @@ import "./Globals.sol";
 import "./ContractRegistry.sol";
 import "./Policy.sol";
 
+/**
+ * @title ClaimApplication
+ * @dev A contract for submitting, verifying, approving, and rejecting claims by policy holders.
+ */
 contract ClaimApplication {
     struct Claim {
         address policyHolder;
@@ -58,6 +62,17 @@ contract ClaimApplication {
         contractRegistry = ContractRegistry(_contractregistryAddress);
     }
 
+    /**
+    * @notice Submit a claim to the policy contract
+    * @dev Only policy holders can submit claims
+    * @dev The claim amount must be greater than zero
+    * @dev The policy must be active
+    * @dev The payment deadline should not be missed
+    * @dev The policy should not have expired
+    * @dev The policyholder should pay the deductible for applying
+    * @param _ClaimAmount The amount the policy holder is claiming
+    * @return None
+    */
     function submitClaim(uint256 _ClaimAmount) external payable {
         Policy policyContract = Policy(
             payable(contractRegistry.getContract(REGISTRY_KEY_POLICY))
@@ -106,6 +121,14 @@ contract ClaimApplication {
         emit ClaimApplicationSubmitted(msg.sender, _policyDetails.policyNumber);
     }
 
+    /**
+    * @notice Verify a claim application
+    * @dev Only insurers can verify claims
+    * @dev The claim must exist
+    * @dev The claim shouldn't be verified
+    * @param _policyHolder The policy holder who submitted the claim
+    * @return None
+    */
     function verifyClaim(
         address _policyHolder
     ) external hasClaimApplication(_policyHolder) onlyInsurer {
@@ -120,6 +143,13 @@ contract ClaimApplication {
         emit ClaimApplicationVerified(_policyHolder, _policyNumber);
     }
 
+    /**
+     * @notice Reject a claim application
+     * @dev Only insurers can reject claims
+     * @dev The claim must exist
+     * @param _policyHolder The policy holder who submitted the claim
+     * @return None
+     */
     function rejectClaim(
         address _policyHolder
     ) external hasClaimApplication(_policyHolder) onlyInsurer {
@@ -133,6 +163,13 @@ contract ClaimApplication {
         emit ClaimApplicationRejected(_policyHolder, _policyNumber);
     }
 
+    /**
+     * @notice Pay out a claim to the policy holder
+     * @dev Only insurers can pay out claims
+     * @dev The claim must exist, be verified, and not already be paid out
+     * @param _policyHolder The policy holder who submitted the claim
+     * @return None
+     */
     function payClaim(address _policyHolder) external onlyInsurer {
         Policy policyContract = Policy(
             payable(contractRegistry.getContract(REGISTRY_KEY_POLICY))
@@ -160,6 +197,12 @@ contract ClaimApplication {
         emit ClaimApplicationApproved(_policyHolder, _policyNumber);
     }
 
+    /**
+     * @notice Get details of a claim
+     * @dev The claim must exist.
+     * @param _policyHolder The policy holder who submitted the claim
+     * @return The details of the claim
+     */
     function getClaim(
         address _policyHolder
     ) public view hasClaimApplication(_policyHolder) returns (Claim memory) {

@@ -4,6 +4,11 @@ pragma solidity >=0.8.18;
 
 import "./ContractRegistry.sol";
 
+/**
+ * @title Policy contract
+ * @dev This contract implements an insurance policy system. It allows policy holders to create policies, make payments,
+ * and file claims. The contract also manages policy details and payments.
+ */
 contract Policy {
     struct PolicyHolder {
         address policyHolderAddress;    // Policy holder address
@@ -73,6 +78,22 @@ contract Policy {
 
     fallback() external payable {}
 
+    /**
+     * @notice Creates a new insurance policy for the caller.
+     * @dev Creates a new insurance policy for the caller.
+     * @param _age The age of the policy holder.
+     * @param _sex The sex of the policy holder (true for male, false for female).
+     * @param _baseTermsNumber The number of years for the policy term.
+     * @return uint256 The policy number of the newly created policy.
+     *
+     * Requirements:
+     * @dev The policy holder's age must be greater than 0.
+     * @dev The policy holder must be eligible for insurance.
+     * @dev The caller cannot have an existing policy or must have an expired policy.
+     * @dev The policy term must be between 1 and 5 years.
+     *
+     * Emits a {PolicyCreated} event.
+     */
     function createPolicy(uint8 _age, bool _sex, uint256 _baseTermsNumber) external returns(uint256) {
         require(_age > 0, "Age should be greater than 0");
         require(checkEligibility(_age, _sex), "You cannot apply for insurance");
@@ -84,7 +105,7 @@ contract Policy {
 
         // Generate policy number and premium amount
         uint256 _policyTerm = basePolicyTerm * _baseTermsNumber;
-        uint256 _premiumAmount = calculatePremium(_age, _sex, _policyTerm, policyLimit);
+        uint256 _premiumAmount = calculatePremium(_age, _sex, _baseTermsNumber);
         _policyNumber = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, _premiumAmount)));
         
         // Create a new policy holder
@@ -109,6 +130,15 @@ contract Policy {
         return _policyNumber;
     }
 
+    /**
+     * @notice Allows a policy holder to make a premium payment for their policy.
+     * @dev Allows a policy holder to make a premium payment for their insurance policy.
+     * 
+     * Requirements:
+     * @dev Caller must have an active insurance policy.
+     * @dev Policy must still be valid and not expired.
+     * @dev Payment amount must be greater than 0 and equal to the premium amount specified in the policy.
+     */
     function makePayment()
         external
         payable
@@ -130,6 +160,13 @@ contract Policy {
         emit PremiumPaid(msg.sender, _policyDetails.policyNumber, _policyPayments.paidPeriods);
     }
 
+    /**
+     * @notice Pays the claim amount to the policy holder
+     * @dev This function can only be called by the ClaimApplication contract.
+     * @dev The claim amount should be less than or equal to the policy limit.
+     * @param _policyHolder The address of the policy holder
+     * @param _claimAmount The amount to be paid to the policy holder
+     */
     function payClaim(address payable _policyHolder, uint256 _claimAmount)
         external
         payable
@@ -199,11 +236,28 @@ contract Policy {
         return policyHolders[_policyHolder].policyNumber;
     }
 
-    function calculatePremium(uint8 _age, bool _sex, uint256 _policyTerm, uint256 _policyLimit) public view returns(uint256) {
-        uint256 _denominator = (100000000 + (_sex ? 0 : 100)) * _policyTerm;
-        return (basePolicyTerm) * _policyLimit * _age / _denominator;
+    /**
+     * @dev Calculates the policy premium based on the provided age, sex, and base policy terms number.
+     * @param _age The age of the policy holder.
+     * @param _sex The sex of the policy holder (true for male, false for female).
+     * @param _baseTermsNumber The base number of policy terms.
+     * @return The calculated policy premium.
+     */
+    function calculatePremium(uint8 _age, bool _sex, uint256 _baseTermsNumber) public view returns(uint256) {
+        uint256 _termsDenominator = 100;
+        uint256 _policyLimitDenominator = (10000000 + (_sex ? 0 : 100));
+        uint256 _ageDenominator = 10;
+        uint256 _denominator = _termsDenominator * _policyLimitDenominator * _ageDenominator;
+        uint256 _termsNumerator = (100 - 5 * (_baseTermsNumber - 1));
+        uint256 _numerator = policyLimit * _age * _termsNumerator;
+        return _numerator / _denominator;
     }
-
+    /**
+     * @dev Checks if the policy holder is eligible for the policy.
+     * @param _age The age of the policy holder.
+     * @param _sex The sex of the policy holder (true for male, false for female).
+     * @return True if the policy holder is eligible, false otherwise.
+     */
     function checkEligibility(uint256 _age, bool _sex) public pure returns(bool) {
         return (_age > 0 && (_sex || !_sex));
     }
