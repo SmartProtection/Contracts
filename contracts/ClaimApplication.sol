@@ -63,16 +63,16 @@ contract ClaimApplication {
     }
 
     /**
-    * @notice Submit a claim to the policy contract
-    * @dev Only policy holders can submit claims
-    * @dev The claim amount must be greater than zero
-    * @dev The policy must be active
-    * @dev The payment deadline should not be missed
-    * @dev The policy should not have expired
-    * @dev The policyholder should pay the deductible for applying
-    * @param _ClaimAmount The amount the policy holder is claiming
-    * @return None
-    */
+     * @notice Submit a claim to the policy contract
+     * @dev Only policy holders can submit claims
+     * @dev The claim amount must be greater than zero
+     * @dev The policy must be active
+     * @dev The payment deadline should not be missed
+     * @dev The policy should not have expired
+     * @dev The policyholder should pay the deductible for applying
+     * @param _ClaimAmount The amount the policy holder is claiming
+     * @return None
+     */
     function submitClaim(uint256 _ClaimAmount) external payable {
         Policy policyContract = Policy(
             payable(contractRegistry.getContract(REGISTRY_KEY_POLICY))
@@ -122,13 +122,13 @@ contract ClaimApplication {
     }
 
     /**
-    * @notice Verify a claim application
-    * @dev Only insurers can verify claims
-    * @dev The claim must exist
-    * @dev The claim shouldn't be verified
-    * @param _policyHolder The policy holder who submitted the claim
-    * @return None
-    */
+     * @notice Verify a claim application
+     * @dev Only insurers can verify claims
+     * @dev The claim must exist
+     * @dev The claim shouldn't be verified
+     * @param _policyHolder The policy holder who submitted the claim
+     * @return None
+     */
     function verifyClaim(
         address _policyHolder
     ) external hasClaimApplication(_policyHolder) onlyInsurer {
