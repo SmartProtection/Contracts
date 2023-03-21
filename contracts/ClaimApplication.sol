@@ -60,6 +60,7 @@ contract ClaimApplication {
         Policy.PolicyDetails memory _policyDetails = policyContract.getPolicyDetails(msg.sender);
         require(msg.value == _policyDetails.deductible, "Policyholder should pay deductible for applying");
         require(_ClaimAmount > 0, "Claim amount must be greater than zero");
+        require(_ClaimAmount <= _policyDetails.policyLimit, "Claim amount must be less than or equal to policy limit");
         require(policyContract.isPolicyHolder(msg.sender), "Only policy holders can submit claims");
         require(policyContract.isPolicyStarted(msg.sender), "Policy isn't activated");
         require(
@@ -145,6 +146,10 @@ contract ClaimApplication {
      */
     function getClaim(address _policyHolder) public view hasClaimApplication(_policyHolder) returns (Claim memory) {
         return claims[indeces[_policyHolder] - 1];
+    }
+
+    function getClaims() public view returns (Claim[] memory) {
+        return claims;
     }
 
     function _removeItem(address _policyHolder) internal hasClaimApplication(_policyHolder) {
