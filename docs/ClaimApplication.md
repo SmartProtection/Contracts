@@ -10,7 +10,7 @@ A contract for submitting, verifying, approving, and rejecting claims by policy 
 
 
 
-### `hasClaimApplication(address _policyHolder)`
+### `checkClaimApplication(address _policyHolder)`
 
 
 
@@ -70,6 +70,19 @@ Get details of a claim
 
 
 The claim must exist.
+
+
+### `hasClaimApplication() → bool` (public)
+
+Check whether account has a claim application
+
+
+
+
+### `getClaims() → struct ClaimApplication.Claim[]` (public)
+
+
+
 
 
 ### `_removeItem(address _policyHolder)` (internal)

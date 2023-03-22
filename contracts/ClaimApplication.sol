@@ -35,7 +35,7 @@ contract ClaimApplication {
         _;
     }
 
-    modifier hasClaimApplication(address _policyHolder) {
+    modifier checkClaimApplication(address _policyHolder) {
         uint256 _claimIndex = indeces[_policyHolder];
         require(_claimIndex != 0, "Policy holder doesn't have any claim applications");
         _;
@@ -88,7 +88,7 @@ contract ClaimApplication {
      * @dev The claim shouldn't be verified
      * @param _policyHolder The policy holder who submitted the claim
      */
-    function verifyClaim(address _policyHolder) external hasClaimApplication(_policyHolder) onlyInsurer {
+    function verifyClaim(address _policyHolder) external checkClaimApplication(_policyHolder) onlyInsurer {
         Policy policyContract = Policy(payable(contractRegistry.getContract(REGISTRY_KEY_POLICY)));
         // Verify the claim and mark it as verified
         uint256 _claimIndex = indeces[_policyHolder] - 1;
@@ -104,7 +104,7 @@ contract ClaimApplication {
      * @dev The claim must exist
      * @param _policyHolder The policy holder who submitted the claim
      */
-    function rejectClaim(address _policyHolder) external hasClaimApplication(_policyHolder) onlyInsurer {
+    function rejectClaim(address _policyHolder) external checkClaimApplication(_policyHolder) onlyInsurer {
         Policy policyContract = Policy(payable(contractRegistry.getContract(REGISTRY_KEY_POLICY)));
         // Remove the claim from the list
         _removeItem(_policyHolder);
@@ -144,15 +144,23 @@ contract ClaimApplication {
      * @param _policyHolder The policy holder who submitted the claim
      * @return Claim structure - the details of the claim
      */
-    function getClaim(address _policyHolder) public view hasClaimApplication(_policyHolder) returns (Claim memory) {
+    function getClaim(address _policyHolder) public view checkClaimApplication(_policyHolder) returns (Claim memory) {
         return claims[indeces[_policyHolder] - 1];
+    }
+
+    /**
+     * @notice Check whether account has a claim application
+     * @return result: exaistance of claim application for current user
+     */
+    function hasClaimApplication() public view returns (bool) {
+        return indeces[msg.sender] != 0;
     }
 
     function getClaims() public view returns (Claim[] memory) {
         return claims;
     }
 
-    function _removeItem(address _policyHolder) internal hasClaimApplication(_policyHolder) {
+    function _removeItem(address _policyHolder) internal checkClaimApplication(_policyHolder) {
         uint256 _claimIndex = indeces[_policyHolder];
 
         indeces[_policyHolder] = 0;

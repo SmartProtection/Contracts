@@ -98,7 +98,11 @@ contract Policy {
 
         uint256 _policyNumber = policyHolders[msg.sender].policyNumber;
         uint256 _policyEndDate = policies[_policyNumber].endDate;
-        require(_policyNumber == 0 || _policyEndDate <= block.timestamp, "Current user already has a policy");
+        uint256 _nextDeadline = policyPayments[_policyNumber].nextDeadline;
+        require(
+            _policyNumber == 0 || _policyEndDate < block.timestamp || _nextDeadline < block.timestamp,
+            "Current user already has a policy"
+        );
         require(
             _baseTermsNumber > 0 && _baseTermsNumber < 6,
             "Policy term must be more than 0 year and less than 6 years"
