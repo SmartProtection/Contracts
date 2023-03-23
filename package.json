@@ -6,6 +6,7 @@
     "deploy:sepolia": "npm run compile && npx hardhat run scripts/deploy.js --network sepolia"
   },
   "dependencies": {
+    "@metamask/eth-sig-util": "^5.0.2",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@openzeppelin/contracts": "^4.8.2",
     "dotenv": "^16.0.3",

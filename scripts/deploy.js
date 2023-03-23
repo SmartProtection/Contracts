@@ -1,8 +1,13 @@
-async function deployContract(
-  contractName,
-  contractRegistryKey,
-  contractRegistry
-) {
+const sigUtils = require("@metamask/eth-sig-util");
+
+function updateEncryptionPublicKey() {
+  const encriptionPublicKey = sigUtils.getEncryptionPublicKey(process.env.PRIVATE_KEY);
+  console.log(`Encryption public key: ${encriptionPublicKey}`);
+  const fs = require("fs");
+  fs.writeFileSync("encryption-public-key.txt", encriptionPublicKey);
+}
+
+async function deployContract(contractName, contractRegistryKey, contractRegistry) {
   // Deploy the contract and pass the ContractRegistry address to the constructor
   const Contract = await ethers.getContractFactory(contractName);
   const contract = await Contract.deploy(contractRegistry.address);
@@ -17,18 +22,16 @@ async function deployContract(
 }
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  updateEncryptionPublicKey();
 
+  const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
   // Deploy the ContractRegistry contract
   const ContractRegistry = await ethers.getContractFactory("ContractRegistry");
   const contractRegistry = await ContractRegistry.deploy();
 
-  console.log(
-    "ContractRegistry deployed to address:",
-    contractRegistry.address
-  );
+  console.log("ContractRegistry deployed to address:", contractRegistry.address);
 
   // Write the ContractRegistry address to a file
   const fs = require("fs");

@@ -12,6 +12,7 @@ import "./Policy.sol";
 contract ClaimApplication {
     struct Claim {
         address policyHolder;
+        string proof;
         uint256 amount;
         bool verified;
         bool paid;
@@ -55,7 +56,7 @@ contract ClaimApplication {
      * @dev The policyholder should pay the deductible for applying
      * @param _ClaimAmount The amount the policy holder is claiming
      */
-    function submitClaim(uint256 _ClaimAmount) external payable {
+    function submitClaim(uint256 _ClaimAmount, string calldata _proof) external payable {
         Policy policyContract = Policy(payable(contractRegistry.getContract(REGISTRY_KEY_POLICY)));
         Policy.PolicyDetails memory _policyDetails = policyContract.getPolicyDetails(msg.sender);
         require(msg.value == _policyDetails.deductible, "Policyholder should pay deductible for applying");
@@ -71,7 +72,13 @@ contract ClaimApplication {
         require(indeces[msg.sender] == 0, "Policy holder has already applied for claim");
 
         // Create a new claim and add it to the list
-        Claim memory newClaim = Claim({policyHolder: msg.sender, amount: _ClaimAmount, verified: false, paid: false});
+        Claim memory newClaim = Claim({
+            policyHolder: msg.sender,
+            proof: _proof,
+            amount: _ClaimAmount,
+            verified: false,
+            paid: false
+        });
         claims.push(newClaim);
         indeces[msg.sender] = claims.length;
 
