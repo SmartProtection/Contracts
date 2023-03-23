@@ -23,7 +23,7 @@ A contract for submitting, verifying, approving, and rejecting claims by policy 
 
 
 
-### `submitClaim(uint256 _ClaimAmount)` (external)
+### `submitClaim(uint256 _ClaimAmount, string _proof)` (external)
 
 Submit a claim to the policy contract
 
@@ -70,13 +70,6 @@ Get details of a claim
 
 
 The claim must exist.
-
-
-### `hasClaimApplication() → bool` (public)
-
-Check whether account has a claim application
-
-
 
 
 ### `hasClaimApplication(address _policyHolder) → bool` (public)
@@ -128,6 +121,9 @@ Check whether account has a claim application
 
 
 address policyHolder
+
+
+string proof
 
 
 uint256 amount
