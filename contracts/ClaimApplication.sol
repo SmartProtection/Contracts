@@ -153,7 +153,16 @@ contract ClaimApplication {
      * @return result: exaistance of claim application for current user
      */
     function hasClaimApplication() public view returns (bool) {
-        return indeces[msg.sender] != 0;
+        return hasClaimApplication(msg.sender);
+    }
+
+    /**
+     * @notice Check whether account has a claim application
+     * @param _policyHolder address of policy holder
+     * @return result: exaistance of claim application for current user
+     */
+    function hasClaimApplication(address _policyHolder) public view returns (bool) {
+        return indeces[_policyHolder] != 0;
     }
 
     function getClaims() public view returns (Claim[] memory) {

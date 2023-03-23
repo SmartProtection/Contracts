@@ -79,6 +79,13 @@ Check whether account has a claim application
 
 
 
+### `hasClaimApplication(address _policyHolder) → bool` (public)
+
+Check whether account has a claim application
+
+
+
+
 ### `getClaims() → struct ClaimApplication.Claim[]` (public)
 
 
