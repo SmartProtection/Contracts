@@ -31,7 +31,7 @@ contract ClaimApplication {
     modifier onlyInsurer() {
         Policy policyContract = Policy(payable(contractRegistry.getContract(REGISTRY_KEY_POLICY)));
         address payable insurer = payable(policyContract.insurer());
-        require(msg.sender == insurer, "Only the insurer can verify claims");
+        require(msg.sender == insurer, "Only the insurer can process claims");
         _;
     }
 
@@ -146,14 +146,6 @@ contract ClaimApplication {
      */
     function getClaim(address _policyHolder) public view checkClaimApplication(_policyHolder) returns (Claim memory) {
         return claims[indeces[_policyHolder] - 1];
-    }
-
-    /**
-     * @notice Check whether account has a claim application
-     * @return result: exaistance of claim application for current user
-     */
-    function hasClaimApplication() public view returns (bool) {
-        return hasClaimApplication(msg.sender);
     }
 
     /**
